@@ -26,13 +26,14 @@ export async function generateRecommendations(args: {
       url: args.page.url,
       title: args.page.title,
       truncatedText: truncated,
+      originalIntro: args.page.paragraphs[0] ?? "",
       diagnosis: args.diagnosis.slice(0, 3),
       targetFeatures: targets,
     }),
     schema: RewriteResultSchema,
     model: "smart",
     purpose: "rewrite",
-    temperature: 0.2,
+    temperature: 1,
   });
   return res.data;
 }

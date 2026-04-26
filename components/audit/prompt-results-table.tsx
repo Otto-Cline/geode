@@ -1,17 +1,44 @@
 import type { AggregatedPromptResult } from "@/lib/models/audit";
+import { InfoTip } from "./info-tip";
 
 export function PromptResultsTable({ rows }: { rows: AggregatedPromptResult[] }) {
   return (
-    <div className="rounded-lg border p-4">
-      <h2 className="mb-3 text-sm font-semibold">Prompt results</h2>
+    <section className="rounded-lg border p-4">
+      <header className="mb-2 flex items-center gap-2">
+        <h2 className="text-sm font-semibold">Prompt results</h2>
+        <InfoTip text="Each prompt was sent to the model multiple times. The columns aggregate across runs, so high mention/evidence rates with low variance signal robust visibility." />
+      </header>
+      <p className="mb-3 text-xs text-zinc-600">
+        For each prompt we ran independent trials and aggregated. High variance suggests the page answers some queries well but is brittle on adjacent ones.
+      </p>
       <table className="w-full text-sm">
         <thead className="text-left text-xs uppercase tracking-wide text-zinc-500">
           <tr>
             <th className="py-1 pr-4">Prompt</th>
-            <th className="py-1 pr-4">Mentions</th>
-            <th className="py-1 pr-4">Evidence</th>
-            <th className="py-1 pr-4">Prominence</th>
-            <th className="py-1">Var.</th>
+            <th className="py-1 pr-4">
+              <span className="inline-flex items-center gap-1">
+                Mentions
+                <InfoTip text="Share of trials where the page appeared in the answer at all." />
+              </span>
+            </th>
+            <th className="py-1 pr-4">
+              <span className="inline-flex items-center gap-1">
+                Evidence
+                <InfoTip text="Share of trials where a specific fact, number, or quote from the page was cited." />
+              </span>
+            </th>
+            <th className="py-1 pr-4">
+              <span className="inline-flex items-center gap-1">
+                Prominence
+                <InfoTip text="Average centrality (0..1). 1 = lead source; 0 = footnote at best. Averaged across runs." />
+              </span>
+            </th>
+            <th className="py-1">
+              <span className="inline-flex items-center gap-1">
+                Var.
+                <InfoTip text="Variance of prominence across runs. Higher = the page's performance flips between runs (brittle)." />
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -26,6 +53,6 @@ export function PromptResultsTable({ rows }: { rows: AggregatedPromptResult[] })
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   );
 }

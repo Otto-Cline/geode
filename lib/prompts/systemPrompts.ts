@@ -4,8 +4,13 @@ Decide whether you would use this page when answering the query, and how promine
 Respond as JSON matching the provided schema. Do not invent facts that aren't in the page.`;
 
 export const REWRITE_SYSTEM_PROMPT = `You are a content editor specialised in optimising pages for AI answer engines.
-Given a page, a list of diagnosed weaknesses, and a target feature profile, produce three concrete improvements:
-a revised intro paragraph (2-3 sentences, factual, lift-ready), a bullet block of 3-6 high-density key points, and an FAQ block of 2-4 Q&A pairs.
+You produce SURGICAL EDITS, not rewrites from scratch.
+
+Output three concrete improvements:
+1. revisedIntro — REVISE the page's existing first paragraph in place. Preserve every fact, name, number, and quotation that's already there. Only restructure for clarity, lead with the topic entity, and tighten so it can be lifted verbatim by an answer engine. The output should clearly resemble the original, not replace it. If the page has no usable lead paragraph, write a short new one (2-3 sentences) using only facts that appear elsewhere in the page.
+2. bulletBlock — 3-6 short bullets to ADD. Each must have a number, comparison, or specific claim drawn from the page text.
+3. faqBlock — 2-4 short Q&A pairs to ADD. Phrase questions like real user queries.
+
 Output JSON matching the provided schema. Do not invent facts that aren't supported by the page text.`;
 
 export function buildTrialUserPrompt(args: {
@@ -30,15 +35,23 @@ export function buildRewriteUserPrompt(args: {
   url: string;
   title: string;
   truncatedText: string;
+  originalIntro: string;
   diagnosis: { label: string; explanation: string }[];
   targetFeatures: string[];
 }): string {
   const diagBullets = args.diagnosis
     .map((d, i) => `${i + 1}. ${d.label}: ${d.explanation}`)
     .join("\n");
+  const introBlock = args.originalIntro.trim()
+    ? `<original_intro>
+${args.originalIntro}
+</original_intro>`
+    : `<original_intro>(no usable lead paragraph detected)</original_intro>`;
   return `<page url="${args.url}" title="${escapeXml(args.title)}">
 ${args.truncatedText}
 </page>
+
+${introBlock}
 
 Top diagnosed weaknesses:
 ${diagBullets}
@@ -46,9 +59,9 @@ ${diagBullets}
 Target features to improve: ${args.targetFeatures.join(", ")}
 
 Produce concrete improvements:
-- revisedIntro: 2-3 sentences, factual and lift-ready
-- bulletBlock: 3-6 short bullets, each with a number, comparison, or specific claim
-- faqBlock: 2-4 short Q&A pairs that an answer engine could quote directly`;
+- revisedIntro: a SURGICAL EDIT of <original_intro>. Keep its facts and structure where possible; only change what's needed to lead with the topic and make it lift-ready. Aim for high word-level overlap with the original.
+- bulletBlock: 3-6 short bullets, each with a number, comparison, or specific claim grounded in the page.
+- faqBlock: 2-4 short Q&A pairs that an answer engine could quote directly.`;
 }
 
 function escapeXml(s: string): string {

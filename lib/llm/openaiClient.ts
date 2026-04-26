@@ -41,7 +41,7 @@ export class OpenAiLlmClient implements LlmClient {
     const start = Date.now();
     const completion = await this.client.chat.completions.parse({
       model: MODEL_IDS[args.model],
-      temperature: args.temperature ?? 0.5,
+      temperature: args.temperature ?? 1,
       messages: [
         { role: "system", content: args.system },
         { role: "user", content: args.user },

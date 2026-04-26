@@ -29,7 +29,7 @@ export async function runPromptTrials(args: {
         schema: TrialResultSchema,
         model: "fast",
         purpose,
-        temperature: 0.7,
+        temperature: 1,
       });
       out.push({ ...res.data, prompt, runIndex });
     }

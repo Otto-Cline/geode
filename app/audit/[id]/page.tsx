@@ -41,7 +41,10 @@ export default async function AuditResultsPage({
       <ScoreCards scores={audit.scores} />
       <div className="grid gap-6 md:grid-cols-2">
         <DiagnosisPanel items={audit.diagnosis} />
-        <RewritePanel rewrite={audit.rewrite} />
+        <RewritePanel
+          rewrite={audit.rewrite}
+          originalIntro={audit.page.paragraphs[0] ?? ""}
+        />
       </div>
       <FeatureBars features={audit.features} />
       <PromptResultsTable rows={audit.aggregated} />
