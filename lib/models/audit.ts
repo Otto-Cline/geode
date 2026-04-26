@@ -89,9 +89,42 @@ export const ParagraphEditSchema = z.object({
 });
 export type ParagraphEdit = z.infer<typeof ParagraphEditSchema>;
 
+export const StructuralRecommendationKindSchema = z.enum([
+  "heading-insert",
+  "heading-edit",
+  "summary-box",
+  "comparison-block",
+  "callout-promotion",
+  "schema-markup",
+  "internal-anchor",
+]);
+export type StructuralRecommendationKind = z.infer<
+  typeof StructuralRecommendationKindSchema
+>;
+
+// Anchor uses sentinel values ("none"/-1) instead of optional fields so the
+// schema stays flat and every property is required (better for OpenAI strict mode).
+export const StructuralRecommendationSchema = z.object({
+  kind: StructuralRecommendationKindSchema,
+  title: z.string().min(1).max(140),
+  description: z.string().max(600),
+  proposedContent: z.string().max(2000), // empty string when not applicable
+  anchorKind: z.enum([
+    "before-paragraph",
+    "after-paragraph",
+    "after-heading",
+    "none",
+  ]),
+  anchorIndex: z.number().int().min(-1), // -1 when anchorKind = "none"
+});
+export type StructuralRecommendation = z.infer<
+  typeof StructuralRecommendationSchema
+>;
+
 export const RewriteResultSchema = z.object({
   revisedIntro: z.string(),
   paragraphEdits: z.array(ParagraphEditSchema).max(3),
+  structuralRecommendations: z.array(StructuralRecommendationSchema).max(5),
   bulletBlock: z.array(z.string()).min(1).max(8),
   faqBlock: z.array(z.object({ q: z.string(), a: z.string() })).min(1).max(6),
 });

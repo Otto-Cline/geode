@@ -27,6 +27,7 @@ export async function generateRecommendations(args: {
       url: args.page.url,
       title: args.page.title,
       paragraphs,
+      headings: args.page.headings,
       originalIntro: paragraphs[0] ?? "",
       diagnosis: args.diagnosis.slice(0, 3),
       targetFeatures: targets,

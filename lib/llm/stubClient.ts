@@ -79,6 +79,37 @@ export class StubLlmClient implements LlmClient {
             "[stub] Picked because it scored low on factual density; tightened lead sentence and added a stat.",
         },
       ],
+      structuralRecommendations: [
+        {
+          kind: "summary-box",
+          title: "[stub] Add a 2-sentence TL;DR at the top",
+          description:
+            "[stub] The page has no lift-ready summary above the fold. A short callout would give answer engines an obvious snippet to quote.",
+          proposedContent:
+            "[stub] X is a Y that does Z. It is most useful when [specific scenario].",
+          anchorKind: "before-paragraph",
+          anchorIndex: 0,
+        },
+        {
+          kind: "heading-insert",
+          title: "[stub] Insert an h2 'Pricing' before paragraph 7",
+          description:
+            "[stub] The pricing discussion runs across several unstructured paragraphs. Inserting an h2 makes it locatable.",
+          proposedContent: "Pricing",
+          anchorKind: "before-paragraph",
+          anchorIndex: 7,
+        },
+        {
+          kind: "schema-markup",
+          title: "[stub] Add FAQPage JSON-LD",
+          description:
+            "[stub] Once you add the FAQ block, mark it up so engines can match question-shaped queries directly.",
+          proposedContent:
+            '{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[]}',
+          anchorKind: "none",
+          anchorIndex: -1,
+        },
+      ],
       bulletBlock: [
         "[stub] Key fact 1 with a concrete number.",
         "[stub] Key fact 2 with a clear comparison.",
