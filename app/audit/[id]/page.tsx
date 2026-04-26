@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { getAudit } from "@/lib/storage/auditStore";
+import { ScoreCards } from "@/components/audit/score-cards";
+import { FeatureBars } from "@/components/audit/feature-bars";
+import { PromptResultsTable } from "@/components/audit/prompt-results-table";
+import { DiagnosisPanel } from "@/components/audit/diagnosis-panel";
+import { RewritePanel } from "@/components/audit/rewrite-panel";
+import { CallLedgerPanel } from "@/components/audit/call-ledger-panel";
 
 export default async function AuditResultsPage({
   params,
@@ -32,10 +38,14 @@ export default async function AuditResultsPage({
         </div>
         <Link href="/" className="rounded-md border px-3 py-1.5 text-sm">↻ Run again</Link>
       </header>
-      {/* Placeholder render: replaced by components in Task 19. */}
-      <pre className="overflow-auto rounded-md bg-zinc-100 p-4 text-xs">
-        {JSON.stringify(audit, null, 2)}
-      </pre>
+      <ScoreCards scores={audit.scores} />
+      <div className="grid gap-6 md:grid-cols-2">
+        <DiagnosisPanel items={audit.diagnosis} />
+        <RewritePanel rewrite={audit.rewrite} />
+      </div>
+      <FeatureBars features={audit.features} />
+      <PromptResultsTable rows={audit.aggregated} />
+      <CallLedgerPanel ledger={audit.ledger} totals={audit.totals} />
     </main>
   );
 }
