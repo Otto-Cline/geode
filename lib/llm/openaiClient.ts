@@ -22,6 +22,13 @@ const COST_PER_1K: Record<LlmModel, { in: number; out: number }> = {
   smart: { in: 0.005, out: 0.015 },
 };
 
+// OpenAI requires JSON-schema names to match ^[a-zA-Z0-9_-]+$. Our `purpose`
+// strings (e.g. "trial:what is a CRM:0") contain colons and spaces.
+function schemaName(purpose: string): string {
+  const cleaned = purpose.replace(/[^a-zA-Z0-9_-]+/g, "_").replace(/^_+|_+$/g, "");
+  return cleaned.length > 0 ? cleaned.slice(0, 64) : "schema";
+}
+
 export class OpenAiLlmClient implements LlmClient {
   private client: OpenAI;
   constructor(private deps: LlmFactoryDeps) {
@@ -39,7 +46,7 @@ export class OpenAiLlmClient implements LlmClient {
         { role: "system", content: args.system },
         { role: "user", content: args.user },
       ],
-      response_format: zodResponseFormat(args.schema, args.purpose),
+      response_format: zodResponseFormat(args.schema, schemaName(args.purpose)),
     });
     const latencyMs = Date.now() - start;
     const parsed = completion.choices[0]?.message?.parsed as T | null;
