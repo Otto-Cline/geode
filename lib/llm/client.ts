@@ -36,7 +36,6 @@ export async function createLlmClient(deps: LlmFactoryDeps): Promise<LlmClient> 
     const { OpenAiLlmClient } = await import("./openaiClient");
     return new OpenAiLlmClient(deps);
   }
-  // @ts-expect-error - module created in Task 6
   const { StubLlmClient } = await import("./stubClient");
   return new StubLlmClient(deps);
 }
