@@ -20,7 +20,7 @@ export default function Home() {
         height={520}
         priority
         aria-hidden
-        className="pointer-events-none fixed -bottom-30 -right-50 z-[-1] h-auto w-120 select-none opacity-90"
+        className="pointer-events-none fixed -bottom-30 -right-50 z-[-1] h-auto w-120 select-none opacity-90 transition-transform duration-300 hover:scale-120"
       />
     </>
   );

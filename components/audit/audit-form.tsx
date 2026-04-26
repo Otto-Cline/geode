@@ -40,7 +40,7 @@ export function AuditForm() {
     setPhase(0);
     const phaseTimer = setInterval(
       () => setPhase((p) => Math.min(p + 1, PHASES.length - 1)),
-      4000,
+      4000
     );
     try {
       const res = await fetch("/api/audit", {
@@ -49,7 +49,10 @@ export function AuditForm() {
         body: JSON.stringify({
           url,
           topic,
-          prompts: prompts.split("\n").map((p) => p.trim()).filter(Boolean),
+          prompts: prompts
+            .split("\n")
+            .map((p) => p.trim())
+            .filter(Boolean),
           runsPerPrompt,
         }),
       });
@@ -117,12 +120,15 @@ export function AuditForm() {
           placeholder="what is a CRM"
         />
         <p className="mt-1 text-xs text-zinc-500">
-          What the page is <em>about</em>. Used for page-level signals (entity clarity, topic-term density). Keep it short and noun-shaped.
+          What the page is <em>about</em>. Used for page-level signals (entity
+          clarity, topic-term density). Keep it short and noun-shaped.
         </p>
       </div>
       <div>
         <div className="mb-1 flex items-center justify-between gap-2">
-          <label className="block text-sm font-medium">Prompts (one per line)</label>
+          <label className="block text-sm font-medium">
+            Prompts (one per line)
+          </label>
           <button
             type="button"
             onClick={generatePromptsFromTopic}
@@ -141,11 +147,15 @@ export function AuditForm() {
           placeholder="One user query per line, e.g.&#10;best CRM for small teams&#10;is a CRM worth it"
         />
         <p className="mt-1 text-xs text-zinc-500">
-          User queries to <em>simulate</em>. Each runs N times and drives Visibility, Stability, and the prompt-results table. Good prompts are adjacent variants of the topic, not the topic itself.
+          User queries to <em>simulate</em>. Each runs N times and drives
+          Visibility, Stability, and the prompt-results table. Good prompts are
+          adjacent variants of the topic, not the topic itself.
         </p>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Runs per prompt</label>
+        <label className="mb-1 block text-sm font-medium">
+          Runs per prompt
+        </label>
         <input
           type="number"
           min={1}
@@ -159,7 +169,7 @@ export function AuditForm() {
         <button
           type="submit"
           disabled={loading || generating}
-          className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
+          className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50 cursor-pointer"
         >
           {loading ? PHASES[phase] : "Run audit"}
         </button>
@@ -167,7 +177,7 @@ export function AuditForm() {
           type="button"
           onClick={loadSeed}
           disabled={loading || generating}
-          className="rounded-md border px-4 py-2 disabled:opacity-50"
+          className="rounded-md border px-4 py-2 disabled:opacity-50 cursor-pointer"
         >
           Use example
         </button>
