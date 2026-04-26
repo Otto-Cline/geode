@@ -1,5 +1,5 @@
 // lib/llm/client.ts
-import type { ZodSchema } from "zod";
+import type { ZodType } from "zod";
 import type { CallLedger } from "@/lib/llm/ledger";
 
 export type LlmModel = "fast" | "smart";
@@ -7,7 +7,7 @@ export type LlmModel = "fast" | "smart";
 export type LlmCompleteArgs<T> = {
   system: string;
   user: string;
-  schema: ZodSchema<T>;
+  schema: ZodType<T>;
   model: LlmModel;
   purpose: string;
   temperature?: number;
