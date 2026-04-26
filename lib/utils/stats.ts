@@ -13,9 +13,10 @@ export function variance(xs: number[]): number {
   return xs.reduce((acc, x) => acc + (x - m) ** 2, 0) / xs.length;
 }
 
-/** Map [0..0.25] variance into [1..0] stability. */
+/** Map variance to stability 1..0. Cap at 0.05 (a realistic upper bound for
+ *  prominence-score variance across runs); values above that all read as 0. */
 export function normalizedVarianceToStability(v: number): number {
-  return clamp01(1 - v / 0.25);
+  return clamp01(1 - v / 0.05);
 }
 
 /** Deterministic seeded RNG (mulberry32). */

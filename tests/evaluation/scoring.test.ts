@@ -122,8 +122,8 @@ describe("computeScores", () => {
     //                 = 0.3 + 0.12 + 0.12 = 0.54
     expect(s.visibilityScore).toBeCloseTo(0.54);
     // stabilityScore from (0.01+0.05)/2 = 0.03
-    // normalizedVarianceToStability(0.03) = 1 - 0.03/0.25 = 1 - 0.12 = 0.88
-    expect(s.stabilityScore).toBeCloseTo(0.88);
+    // normalizedVarianceToStability(0.03) = clamp01(1 - 0.03/0.05) = 0.4
+    expect(s.stabilityScore).toBeCloseTo(0.4);
   });
 
   it("stability decreases with high variance", () => {
