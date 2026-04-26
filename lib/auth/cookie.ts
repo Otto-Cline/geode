@@ -21,13 +21,14 @@ function toBase64Url(buf: ArrayBuffer): string {
   return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
-function fromBase64Url(s: string): Uint8Array {
+function fromBase64Url(s: string): ArrayBuffer {
   const b64 = s.replace(/-/g, "+").replace(/_/g, "/");
   const pad = (4 - (b64.length % 4)) % 4;
   const decoded = atob(b64 + "=".repeat(pad));
-  const bytes = new Uint8Array(decoded.length);
-  for (let i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
-  return bytes;
+  const buffer = new ArrayBuffer(decoded.length);
+  const view = new Uint8Array(buffer);
+  for (let i = 0; i < decoded.length; i++) view[i] = decoded.charCodeAt(i);
+  return buffer;
 }
 
 export async function makeAuthCookieValue(secret: string): Promise<string> {
