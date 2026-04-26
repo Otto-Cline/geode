@@ -4,7 +4,6 @@ import type {
   LlmCompleteResult,
   LlmFactoryDeps,
 } from "./client";
-import { TrialResultSchema, RewriteResultSchema } from "@/lib/models/audit";
 import { seededRng, clamp01 } from "@/lib/utils/stats";
 
 export class StubLlmClient implements LlmClient {
@@ -13,12 +12,13 @@ export class StubLlmClient implements LlmClient {
   async complete<T>(args: LlmCompleteArgs<T>): Promise<LlmCompleteResult<T>> {
     const start = Date.now();
     let data: unknown;
-    if (args.schema === TrialResultSchema) {
+    if (args.purpose.startsWith("trial:")) {
       data = this.fakeTrial(args.purpose);
-    } else if (args.schema === RewriteResultSchema) {
+    } else if (args.purpose === "rewrite") {
       data = this.fakeRewrite();
+    } else if (args.purpose === "generate-prompts") {
+      data = this.fakeGeneratedPrompts();
     } else {
-      // Generic fallback: try to satisfy schema with a best-effort empty value.
       data = args.schema.parse({});
     }
     const parsed = args.schema.parse(data) as T;
@@ -77,6 +77,18 @@ export class StubLlmClient implements LlmClient {
       faqBlock: [
         { q: "[stub] What is this page about?", a: "[stub] One-sentence answer." },
         { q: "[stub] Who is it for?", a: "[stub] One-sentence answer." },
+      ],
+    };
+  }
+
+  private fakeGeneratedPrompts() {
+    return {
+      prompts: [
+        "[stub] what does it do",
+        "[stub] best option for small teams",
+        "[stub] is it worth it",
+        "[stub] alternatives to consider",
+        "[stub] how does pricing work",
       ],
     };
   }

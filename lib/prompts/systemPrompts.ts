@@ -1,3 +1,23 @@
+export const GENERATE_PROMPTS_SYSTEM_PROMPT = `You generate evaluation prompts for a GEO (Generative Engine Optimization) audit.
+
+Given a URL and a topic, produce 5 short user queries that:
+- a real user might actually type into a search engine or AI assistant
+- cover DIFFERENT angles of the topic (e.g. definition, comparison, recommendation, troubleshooting, "is it worth it", "how to choose")
+- the page at the URL is plausibly a candidate to answer (but not always the perfect match — we want some adjacency, not just topic restatements)
+
+Each prompt should be 3-12 words, lowercase, no quotes, no question marks unless natural.
+Return JSON matching the schema. Do not include explanations or numbering.`;
+
+export function buildGeneratePromptsUserPrompt(args: {
+  url: string;
+  topic: string;
+}): string {
+  return `URL: ${args.url}
+Topic: ${args.topic}
+
+Generate 5 evaluation prompts.`;
+}
+
 export const TRIAL_SYSTEM_PROMPT = `You are an answer-engine simulator.
 You will be given the contents of one candidate web page and a user query.
 Decide whether you would use this page when answering the query, and how prominently.

@@ -30,9 +30,10 @@ export function AuditForm() {
   const [runsPerPrompt, setRuns] = useState(3);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState(0);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -63,6 +64,29 @@ export function AuditForm() {
     }
   }
 
+  async function generatePromptsFromTopic() {
+    setError(null);
+    if (!url.trim() || !topic.trim()) {
+      setError("Add a URL and a topic before generating prompts.");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/generate-prompts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, topic }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "prompt generation failed");
+      setPrompts((json.prompts as string[]).join("\n"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "prompt generation failed");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   function loadSeed() {
     setUrl(SEED.url);
     setTopic(SEED.topic);
@@ -74,32 +98,77 @@ export function AuditForm() {
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <label className="mb-1 block text-sm font-medium">URL</label>
-        <input value={url} onChange={(e) => setUrl(e.target.value)} required type="url"
-          className="w-full rounded-md border px-3 py-2" placeholder="https://example.com/page" />
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          required
+          type="url"
+          className="w-full rounded-md border px-3 py-2"
+          placeholder="https://example.com/page"
+        />
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">Topic</label>
-        <input value={topic} onChange={(e) => setTopic(e.target.value)} required
-          className="w-full rounded-md border px-3 py-2" placeholder="best CRM for small teams" />
+        <input
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          required
+          className="w-full rounded-md border px-3 py-2"
+          placeholder="what is a CRM"
+        />
+        <p className="mt-1 text-xs text-zinc-500">
+          What the page is <em>about</em>. Used for page-level signals (entity clarity, topic-term density). Keep it short and noun-shaped.
+        </p>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Prompts (one per line)</label>
-        <textarea value={prompts} onChange={(e) => setPrompts(e.target.value)} required rows={6}
-          className="w-full rounded-md border px-3 py-2 font-mono text-sm" />
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <label className="block text-sm font-medium">Prompts (one per line)</label>
+          <button
+            type="button"
+            onClick={generatePromptsFromTopic}
+            disabled={loading || generating || !url.trim() || !topic.trim()}
+            className="rounded-md border px-2.5 py-1 text-xs text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {generating ? "Generating…" : "✨ Generate from topic"}
+          </button>
+        </div>
+        <textarea
+          value={prompts}
+          onChange={(e) => setPrompts(e.target.value)}
+          required
+          rows={6}
+          className="w-full rounded-md border px-3 py-2 font-mono text-sm"
+          placeholder="One user query per line, e.g.&#10;best CRM for small teams&#10;is a CRM worth it"
+        />
+        <p className="mt-1 text-xs text-zinc-500">
+          User queries to <em>simulate</em>. Each runs N times and drives Visibility, Stability, and the prompt-results table. Good prompts are adjacent variants of the topic, not the topic itself.
+        </p>
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">Runs per prompt</label>
-        <input type="number" min={1} max={10} value={runsPerPrompt}
+        <input
+          type="number"
+          min={1}
+          max={10}
+          value={runsPerPrompt}
           onChange={(e) => setRuns(Number(e.target.value))}
-          className="w-32 rounded-md border px-3 py-2" />
+          className="w-32 rounded-md border px-3 py-2"
+        />
       </div>
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={loading}
-          className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={loading || generating}
+          className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
+        >
           {loading ? PHASES[phase] : "Run audit"}
         </button>
-        <button type="button" onClick={loadSeed} disabled={loading}
-          className="rounded-md border px-4 py-2">
+        <button
+          type="button"
+          onClick={loadSeed}
+          disabled={loading || generating}
+          className="rounded-md border px-4 py-2 disabled:opacity-50"
+        >
           Use example
         </button>
       </div>

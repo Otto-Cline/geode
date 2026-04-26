@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const AuditInputSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   topic: z.string().min(1),
   prompts: z.array(z.string().min(1)).min(1).max(20),
   runsPerPrompt: z.number().int().min(1).max(10).default(3),
@@ -41,6 +41,11 @@ export type CompositeFactors = {
   authorityTrustSignals: number;
   entityKeywordClarity: number;
 };
+
+export const GeneratedPromptsSchema = z.object({
+  prompts: z.array(z.string().min(3).max(200)).min(3).max(8),
+});
+export type GeneratedPrompts = z.infer<typeof GeneratedPromptsSchema>;
 
 export const TrialResultSchema = z.object({
   mentioned: z.boolean(),
