@@ -32,7 +32,6 @@ export type LlmFactoryDeps = {
 export async function createLlmClient(deps: LlmFactoryDeps): Promise<LlmClient> {
   const provider = process.env.LLM_PROVIDER ?? "stub";
   if (provider === "openai") {
-    // @ts-expect-error - module created in Task 21
     const { OpenAiLlmClient } = await import("./openaiClient");
     return new OpenAiLlmClient(deps);
   }
