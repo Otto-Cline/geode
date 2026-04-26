@@ -69,6 +69,16 @@ export class StubLlmClient implements LlmClient {
     return {
       revisedIntro:
         "[stub] A focused 2-sentence summary of the page's main claim and audience, written for an answer engine to lift verbatim.",
+      paragraphEdits: [
+        {
+          paragraphIndex: 2,
+          before: "[stub] An existing paragraph from the page that lacks specifics.",
+          after:
+            "[stub] An existing paragraph from the page that now leads with a concrete claim and adds one specific number.",
+          rationale:
+            "[stub] Picked because it scored low on factual density; tightened lead sentence and added a stat.",
+        },
+      ],
       bulletBlock: [
         "[stub] Key fact 1 with a concrete number.",
         "[stub] Key fact 2 with a clear comparison.",

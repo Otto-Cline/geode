@@ -32,6 +32,34 @@ export function RewritePanel({ rewrite, originalIntro }: Props) {
         />
       </section>
 
+      {rewrite.paragraphEdits.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Paragraph edits ({rewrite.paragraphEdits.length})
+            </h3>
+            <InfoTip text="Surgical edits to specific weak paragraphs in the page, picked by the model from the lowest-scoring sections. Each is a word-level diff against the original paragraph." />
+          </div>
+          <ul className="space-y-3">
+            {rewrite.paragraphEdits.map((edit, i) => (
+              <li key={i} className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="font-mono text-zinc-500">
+                    Paragraph #{edit.paragraphIndex}
+                  </span>
+                  <span className="italic text-zinc-600">{edit.rationale}</span>
+                </div>
+                <DiffView
+                  before={edit.before}
+                  after={edit.after}
+                  emptyBeforeMessage="Original paragraph not found on page — treating as a new addition."
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section>
         <div className="mb-1 flex items-center gap-1.5">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">

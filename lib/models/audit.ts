@@ -81,8 +81,17 @@ export type DiagnosisItem = {
   explanation: string;
 };
 
+export const ParagraphEditSchema = z.object({
+  paragraphIndex: z.number().int().min(0),
+  before: z.string(),
+  after: z.string(),
+  rationale: z.string().max(280),
+});
+export type ParagraphEdit = z.infer<typeof ParagraphEditSchema>;
+
 export const RewriteResultSchema = z.object({
   revisedIntro: z.string(),
+  paragraphEdits: z.array(ParagraphEditSchema).max(3),
   bulletBlock: z.array(z.string()).min(1).max(8),
   faqBlock: z.array(z.object({ q: z.string(), a: z.string() })).min(1).max(6),
 });
